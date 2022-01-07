@@ -1,6 +1,5 @@
 import functools
 import typing
-
 import modcall
 
 def apply_label(obj: typing.Any, /, key: typing.Any, value: typing.Any = None) -> None:
