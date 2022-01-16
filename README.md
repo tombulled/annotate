@@ -69,7 +69,7 @@ class Route:
     path: str
     method: str
 
-route = label.label('routes', hook=Route, multi=True)
+route = label.label('route', hook=Route, multi=True)
 
 @route('/foo', method = 'GET')
 @route('/bar', method = 'GET')
@@ -80,5 +80,5 @@ def foo():
 
 ```python
 >>> foo.__labels__
-{'routes': [Route(path='/baz', method='GET'), Route(path='/bar', method='GET'), Route(path='/foo', method='GET')]}
+{'route': [Route(path='/baz', method='GET'), Route(path='/bar', method='GET'), Route(path='/foo', method='GET')]}
 ```
