@@ -2,7 +2,7 @@
 Label objects
 
 ## Installation
-```sh
+```console
 pip install git+https://github.com/tombulled/label@main
 ```
 
