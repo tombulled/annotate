@@ -1,58 +1,84 @@
 # label
 Label objects
 
+## Installation
+```sh
+pip install git+https://github.com/tombulled/label@main
+```
+
 ## Usage
+
+### Marker Labels
+A label that has no value
 ```python
->>> import label
-```
-
-### Basic labelling
-```python
-@label('awesome')
-def foo(): pass
-
-@label('priority', 3)
-def bar(): pass
-
-cool = label('cool')
-
-@cool
-def baz(): pass
-
->>> foo.__labels__
-{'awesome': None}
->>>
->>> bar.__labels__
-{'priority': 3}
->>>
->>> baz.__labels__
-{'cool': None}
-```
-
-### Advanced labelling
-```python
-import dataclasses
-import sentinel
 import label
 
+deprecated = label.marker('deprecated')
+
+@deprecated
+def foo():
+    pass
+```
+
+```python
+>>> foo.__labels__
+{'deprecated': None}
+```
+
+### Single-Value Labels
+A label that has a single value
+```python
+import label
+
+priority = label.label('priority')
+
+@priority(3)
+def foo():
+    pass
+```
+
+```python
+>>> foo.__labels__
+{'priority': 3}
+```
+
+### Multi-Value Labels
+A label that has multiple values
+```python
+import label
+
+metadata = label.label('metadata', hook=dict)
+
+@metadata(author='sam', version='1.0.1')
+def foo():
+    pass
+```
+
+```python
+>>> foo.__labels__
+{'metadata': {'author': 'sam', 'version': '1.0.1'}}
+```
+
+### Advanced Labelling
+```python
+import label
+import dataclasses
+
 @dataclasses.dataclass
-class RouteModel:
+class Route:
     path: str
     method: str
 
-class Test(sentinel.Sentinel): pass
-class Profile(sentinel.Sentinel): pass
-class Route(sentinel.Sentinel): pass
+route = label.label('routes', hook=Route, multi=True)
 
-test = label(Test)
-profile = label.labeller(Profile)
-route = label.labeller(Route, hook = RouteModel)
+@route('/foo', method = 'GET')
+@route('/bar', method = 'GET')
+@route('/baz', method = 'GET')
+def foo():
+    pass
+```
 
-@test
-@profile('dev')
-@route('/', method = 'GET')
-def foo(): pass
-
+```python
 >>> foo.__labels__
-{Route: RouteModel(path='/', method='GET'), Profile: 'dev', Test: None}
+{'routes': [Route(path='/baz', method='GET'), Route(path='/bar', method='GET'), Route(path='/foo', method='GET')]}
 ```

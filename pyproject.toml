@@ -4,10 +4,13 @@ version = "0.1.0"
 description = "Label objects"
 authors = ["Tom Bulled <26026015+tombulled@users.noreply.github.com>"]
 license = "MIT"
+readme = "README.md"
+homepage = "https://github.com/tombulled/label"
+repository = "https://github.com/tombulled/label"
+keywords = ["python", "label", "annotate"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
-modcall = "^0.1.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

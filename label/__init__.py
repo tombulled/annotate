@@ -1,28 +1,8 @@
-import functools
-import typing
-import modcall
+from .labeller import Labeller
 
-def apply_label(obj: typing.Any, /, key: typing.Any, value: typing.Any = None) -> None:
-    if not hasattr(obj, '__labels__'):
-        obj.__labels__: dict = {}
+LABELLER = Labeller()
 
-    obj.__labels__[key] = value
-
-def label(key: typing.Any, value: typing.Any = None):
-    def wrapper(obj):
-        apply_label(obj, key, value)
-
-        return obj
-
-    return wrapper
-
-def labeller(key: typing.Any, hook = lambda x: x):
-    def wrapper(*args, **kwargs):
-        return label(key, hook(*args, **kwargs))
-
-    return wrapper
-
-def get_labels(obj: typing.Any) -> dict:
-    return getattr(obj, '__labels__', {})
-
-modcall(__name__, label)
+marker = LABELLER.marker
+label = LABELLER.label
+init = LABELLER.init
+get = LABELLER.get
