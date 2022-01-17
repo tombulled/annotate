@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "label"
-version = "0.1.0"
+version = "0.1.1"
 description = "Label objects"
 authors = ["Tom Bulled <26026015+tombulled@users.noreply.github.com>"]
 license = "MIT"
