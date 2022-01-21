@@ -1,12 +1,14 @@
-import functools
 import typing
 import dataclasses
 import typing
 
+from . import replacers
+from . import hooks
+
 
 @dataclasses.dataclass
 class Labeller:
-    attr: str = "__labels__"
+    attr: str = "_annotations_"
 
     def marker(self, key: typing.Any, /) -> typing.Callable:
         return self.label(key)(None)
@@ -16,32 +18,18 @@ class Labeller:
         key: typing.Any,
         /,
         *,
-        hook: typing.Optional[typing.Callable] = None,
-        multi: bool = False,
-        overwrite: bool = True,
+        hook: typing.Callable = hooks.identity,
+        replace: typing.Callable = replacers.new,
     ) -> typing.Callable:
         def decorate(*args: typing.Any, **kwargs: typing.Any) -> typing.Callable:
             def wrapper(obj: typing.T, /) -> typing.T:
-                value: typing.Any
                 labels: dict = self.get(obj)
+                value: typing.Any = hook(*args, **kwargs)
 
-                if hook is not None:
-                    value = hook(*args, **kwargs)
-                else:
-                    if len(args) != 1 or kwargs:
-                        raise Exception(
-                            "Multiple arguments provided without specifying a hook"
-                        )
+                if key in labels:
+                    value = replace(labels[key], value)
 
-                    value = args[0]
-
-                if overwrite or key not in labels:
-                    if multi:
-                        labels.setdefault(key, [])
-
-                        labels[key].append(value)
-                    else:
-                        labels[key] = value
+                labels[key] = value
 
                 return obj
 
