@@ -8,12 +8,12 @@ pip install git+https://github.com/tombulled/label@main
 
 ## Usage
 
-### Marker Labels
+### Marker Annotation
 A label that has no value
 ```python
-import label
+import annotate
 
-deprecated = label.marker('deprecated')
+deprecated = annotate.marker('deprecated')
 
 @deprecated
 def foo():
@@ -21,16 +21,16 @@ def foo():
 ```
 
 ```python
->>> foo.__labels__
+>>> foo._annotations_
 {'deprecated': None}
 ```
 
-### Single-Value Labels
+### Single-Value Annotation
 A label that has a single value
 ```python
-import label
+import annotate
 
-priority = label.label('priority')
+priority = annotate.annotation('priority')
 
 @priority(3)
 def foo():
@@ -38,16 +38,16 @@ def foo():
 ```
 
 ```python
->>> foo.__labels__
+>>> foo._annotations_
 {'priority': 3}
 ```
 
-### Multi-Value Labels
+### Multi-Value Annotation
 A label that has multiple values
 ```python
-import label
+import annotate
 
-metadata = label.label('metadata', hook=dict)
+metadata = annotate.annotation('metadata', hook=dict)
 
 @metadata(author='sam', version='1.0.1')
 def foo():
@@ -55,30 +55,37 @@ def foo():
 ```
 
 ```python
->>> foo.__labels__
+>>> foo._annotations_
 {'metadata': {'author': 'sam', 'version': '1.0.1'}}
 ```
 
-### Advanced Labelling
+### Advanced Annotating
 ```python
-import label
+import annotate
 import dataclasses
+import operator
 
 @dataclasses.dataclass
 class Route:
     path: str
     method: str
 
-route = label.label('route', hook=Route, multi=True)
+route = annotate.annotation(
+    'route',
+    hook = lambda *paths, **kwargs: [
+        Route(path, **kwargs)
+        for path in paths
+    ],
+    replace = operator.add
+)
 
-@route('/foo', method = 'GET')
-@route('/bar', method = 'GET')
-@route('/baz', method = 'GET')
+@route('/foo', '/bar', method='GET')
+@route('/cat', '/dog', method='POST')
 def foo():
     pass
 ```
 
 ```python
->>> foo.__labels__
-{'route': [Route(path='/baz', method='GET'), Route(path='/bar', method='GET'), Route(path='/foo', method='GET')]}
+>>> foo._annotations_
+{'route': [Route(path='/cat', method='POST'), Route(path='/dog', method='POST'), Route(path='/foo', method='GET'), Route(path='/bar', method='GET')]}
 ```

@@ -1,13 +1,13 @@
 [tool.poetry]
-name = "label"
+name = "annotate"
 version = "0.1.1"
-description = "Label objects"
+description = "Annotate objects"
 authors = ["Tom Bulled <26026015+tombulled@users.noreply.github.com>"]
 license = "MIT"
 readme = "README.md"
-homepage = "https://github.com/tombulled/label"
-repository = "https://github.com/tombulled/label"
-keywords = ["python", "label", "annotate"]
+homepage = "https://github.com/tombulled/annotate"
+repository = "https://github.com/tombulled/annotate"
+keywords = ["python", "annotate", "label", "mark", "tag"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
