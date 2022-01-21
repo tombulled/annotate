@@ -1,9 +1,9 @@
-# label
-Label objects
+# annotate
+Annotate objects
 
 ## Installation
 ```console
-pip install git+https://github.com/tombulled/label@main
+pip install git+https://github.com/tombulled/annotate@main
 ```
 
 ## Usage
