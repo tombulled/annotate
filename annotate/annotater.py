@@ -7,7 +7,7 @@ from . import hooks
 
 
 @dataclasses.dataclass
-class Labeller:
+class Annotater:
     attr: str = "_annotations_"
 
     def marker(self, key: typing.Any, /) -> typing.Callable:
@@ -23,8 +23,14 @@ class Labeller:
     ) -> typing.Callable:
         def decorate(*args: typing.Any, **kwargs: typing.Any) -> typing.Callable:
             def wrapper(obj: typing.T, /) -> typing.T:
-                labels: dict = self.get(obj)
                 value: typing.Any = hook(*args, **kwargs)
+
+                labels: dict = self.get(obj)
+
+                if labels is None:
+                    self.init(obj)
+
+                    labels: dict = self.get(obj)
 
                 if key in labels:
                     value = replace(labels[key], value)
@@ -41,8 +47,5 @@ class Labeller:
         if not hasattr(obj, self.attr):
             setattr(obj, self.attr, {})
 
-    def get(self, obj: typing.Any, /, *, init: bool = True) -> typing.Optional[dict]:
-        if init:
-            self.init(obj)
-
+    def get(self, obj: typing.Any, /) -> typing.Optional[dict]:
         return getattr(obj, self.attr, None)

@@ -1,8 +1,8 @@
-from .labeller import Labeller
+from .annotater import Annotater
 
-LABELLER = Labeller()
+ANNOTATER = Annotater()
 
-marker = LABELLER.marker
-label = LABELLER.label
-init = LABELLER.init
-get = LABELLER.get
+marker = ANNOTATER.marker
+label = ANNOTATER.label
+init = ANNOTATER.init
+get = ANNOTATER.get
