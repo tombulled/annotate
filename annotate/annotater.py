@@ -13,7 +13,7 @@ class Annotater:
     def marker(self, key: typing.Any, /) -> typing.Callable:
         return self.label(key)(None)
 
-    def label(
+    def annotation(
         self,
         key: typing.Any,
         /,

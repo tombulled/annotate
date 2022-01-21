@@ -30,7 +30,7 @@ A label that has a single value
 ```python
 import annotate
 
-priority = annotate.annotate('priority')
+priority = annotate.annotation('priority')
 
 @priority(3)
 def foo():
@@ -47,7 +47,7 @@ A label that has multiple values
 ```python
 import annotate
 
-metadata = annotate.annotate('metadata', hook=dict)
+metadata = annotate.annotation('metadata', hook=dict)
 
 @metadata(author='sam', version='1.0.1')
 def foo():
@@ -70,7 +70,7 @@ class Route:
     path: str
     method: str
 
-route = annotate.label(
+route = annotate.annotation(
     'route',
     hook = lambda *paths, **kwargs: [
         Route(path, **kwargs)
