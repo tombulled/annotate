@@ -9,7 +9,7 @@ pip install git+https://github.com/tombulled/annotate@main
 ## Usage
 
 ### Marker Annotation
-A label that has no value
+An annotation that has no value
 ```python
 import annotate
 
@@ -26,7 +26,7 @@ def foo():
 ```
 
 ### Single-Value Annotation
-A label that has a single value
+An annotation that has a single value
 ```python
 import annotate
 
@@ -43,7 +43,7 @@ def foo():
 ```
 
 ### Multi-Value Annotation
-A label that has multiple values
+An annotation that has multiple values
 ```python
 import annotate
 
