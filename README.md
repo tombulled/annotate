@@ -1,5 +1,5 @@
 # annotate
-Annotate objects
+Annotation System Inspired by Java Annotations
 
 ## Installation
 ```console
