@@ -2,6 +2,11 @@
 Annotation System Inspired by Java Annotations
 
 ## Installation
+### Specific Version (recommended)
+```console
+pip install git+https://github.com/tombulled/annotate@v0.1.1
+```
+### Latest Version
 ```console
 pip install git+https://github.com/tombulled/annotate@main
 ```
