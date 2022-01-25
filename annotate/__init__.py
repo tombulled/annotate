@@ -3,6 +3,10 @@ from .annotater import Annotater
 ANNOTATER = Annotater()
 
 marker = ANNOTATER.marker
-label = ANNOTATER.label
+annotation = ANNOTATER.annotation
 init = ANNOTATER.init
 get = ANNOTATER.get
+
+def set(obj, key, value):
+    init(obj)
+    get(obj)[key] = value
