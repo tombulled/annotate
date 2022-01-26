@@ -5,6 +5,16 @@ import annotate
 from typing import Any
 
 '''
+Options:
+    @repeatable (uses a list)
+    @inherited (classes inherit annotations)
+
+@repeatable
+@inherited
+@annotation
+def route(*paths, **kwargs):
+    ...
+
 Marker:
     needs: key (overwrites)
 
@@ -27,111 +37,52 @@ Interfaces:
 @description('value')
 '''
 
+def identity(x):
+    return x
+
 @dataclasses.dataclass
 class Route:
     path: str
     method: str
-
-# def marker(key):
-#     return annotation(key, None)
-
-def annotation(key, value=None):
-    def wrapper(obj):
-        annotate.set(obj, key, value)
-
-        return obj
-
-    return wrapper
-
-# def hooked_annotation(key, hook):
-#     def wrapper(*args, **kwargs):
-#         return annotation(key, hook(*args, **kwargs))
-
-#     return wrapper
-
-def from_hook(hook):
-    def decorate(key):
-        def wrapper(*args, **kwargs):
-            return annotation(key, hook(*args, **kwargs))
-
-        return wrapper
-    return decorate
-
-# @dataclasses.dataclass
-# class Entry:
-#     key: Any
-#     value: Any
 
 @dataclasses.dataclass
 class Marker:
     key: str
     value: Any = None
 
+    # inherited: bool = False # TODO
+    repeatable: bool = False
+
     def __call__(self, obj):
         annotate.init(obj)
 
         annotations = annotate.get(obj)
 
-        value = self.value
+        if self.repeatable:
+            annotations.setdefault(self.key, [])
 
-        if self.key in annotations:
-            value = self.resolve(annotations[self.key])
-
-        annotations[self.key] = value
+            annotations[self.key].append(self.value)
+        else:
+            annotations[self.key] = self.value
 
         return obj
 
-    def resolve(self, current_value):
-        return self.value
+@dataclasses.dataclass(init=False)
+class Factory:
+    hook: typing.Callable = identity
+    marker: Marker
 
-def identity(x):
-    return x
-
-# @dataclasses.dataclass
-class Annotation:
-    key: typing.Any
-    # hook: typing.Callable = identity
-    # replace: typing.Callable = lambda old, new: new
-
-    def __init__(self, key: typing.Any, /, *, hook: typing.Optional[typing.Callable] = None) -> None:
-        self.key = key
-
-        if hook is not None:
-            self.hook = hook
-
-    @staticmethod
-    def hook(x):
-        return x
+    def __init__(self, *args, hook: typing.Callable = identity, **kwargs):
+        self.hook = hook
+        self.marker = Marker(*args, **kwargs)
 
     def __call__(self, *args, **kwargs):
-        return Marker(self.key, self.hook(*args, **kwargs))
+        return dataclasses.replace(self.marker, value=self.hook(*args, **kwargs))
 
-# @dataclasses.dataclass
-# class Depends(Annotation):
-#     key: str = 'depends'
-#     hook: typing.Callable = lambda ticket: [ticket]
+route = Factory('route', hook=Route, repeatable=True)
 
-    # def resolve(self, current_value):
-    #     return current_value + self.value
+@route('/a', method='GET')
+@route('/b', method='GET')
+def foo(): ...
 
-# route = from_hook(Route)('route')
-# disabled = annotation('disabled', True)
-# deprecated = annotation('deprecated')
-# awesome = Marker('category', 'awesome')
-# depends = Annotation('depends', hook = lambda x: [x], replace=lambda a,b: a+b)
-
-# @disabled
-# @deprecated
-# @route('/bar', method='GET')
-# @awesome
-# @depends('abc-1')
-# @depends('abc-2')
-# def foo():
-#     ...
-
-# depends = Depends()
-depends = Annotation('depends', hook=lambda x: [x])
-
-@depends('abc-1')
-@depends('abc-2')
-def bar(): ...
+print(foo._annotations_)
