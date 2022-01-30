@@ -1,47 +1,7 @@
 import dataclasses
-import types
 import typing
 
-from typing import Any
-
 import annotate
-
-'''
-Options:
-    @repeatable (uses a list)
-    @inherited (classes inherit annotations)
-
-@repeatable
-@inherited
-@annotation
-def route(*paths, **kwargs):
-    ...
-
-Marker:
-    needs: key (overwrites)
-
-Single Value:
-    needs: key, value (overwrites)
-
-Multi Value:
-    needs: key, value/hook, resolver
-
-Marker -> (key, value)
-    value = None
-
-Annotation
-    value = hook(*args, **kwargs)
-
-set(key, value)
-
-Interfaces:
-@annotate('description', 'foo')
-@description('value')
-
-
->>> foo._annotations_
-{'description': Annotation(key='description', value='An awesome function!', inherited=False, repeatable=False)}
-'''
 
 def identity(x):
     return x
@@ -61,7 +21,7 @@ class Route:
 @dataclasses.dataclass
 class Annotation:
     key: str
-    value: Any = None
+    value: typing.Any = None
 
     inherited: bool = False # NOTE: Should this apply to methods?
     repeatable: bool = False
@@ -115,26 +75,6 @@ class Annotation:
             annotations[self.key] = self
 
         return obj
-
-# @dataclasses.dataclass(init=False)
-# class Factory:
-#     hook: typing.Callable = identity
-#     marker: Marker
-
-#     def __init__(self, *args, hook: typing.Callable = identity, **kwargs):
-#         self.hook = hook
-#         self.marker = Marker(*args, **kwargs)
-
-#     def __call__(self, *args, **kwargs):
-#         return dataclasses.replace(self.marker, value=self.hook(*args, **kwargs))
-
-# route = Annotation('route', value_factory=Route, repeatable=True)
-
-# @route('/a', method='GET')
-# @route('/b', method='GET')
-# def foo(): ...
-
-# print(foo._annotations_)
 
 def description(description: str) -> Annotation:
     return Annotation('description', description, inherited=False, repeatable=True)
