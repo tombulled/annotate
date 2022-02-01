@@ -3,7 +3,7 @@ import dataclasses
 import typing
 
 from . import replacers
-from . import hooks
+from . import utils
 
 
 @dataclasses.dataclass
@@ -18,7 +18,7 @@ class Annotater:
         key: typing.Any,
         /,
         *,
-        hook: typing.Callable = hooks.identity,
+        hook: typing.Callable = utils.identity,
         replace: typing.Callable = replacers.new,
     ) -> typing.Callable:
         def decorate(*args: typing.Any, **kwargs: typing.Any) -> typing.Callable:
