@@ -1,15 +1,6 @@
 import dataclasses
 import typing
 
-'''
-TODO:
-    expose @annotation?, e.g: (@Route?)
-        @annotation
-        class Route:
-            path: str
-            method: str
-'''
-
 ATTR: str = '_annotations_'
 
 def get_annotations(obj):
@@ -67,6 +58,19 @@ def annotate(obj, annotation):
             annotations[annotation.key].value.append(annotation.value)
     else:
         annotations[annotation.key] = annotation
+
+def annotation(key: str, /, **opts: bool):
+    def decorate(func):
+        def wrapper(*args, **kwargs):
+            return Annotation(
+                key = key,
+                value = func(*args, **kwargs),
+                **opts,
+            )
+
+        return wrapper
+
+    return decorate
 
 @dataclasses.dataclass
 class Route:
@@ -137,3 +141,13 @@ def foo():
     ...
 
 print(foo._annotations_)
+
+@annotation('my_annotation', inherited=True)
+def my_annotation(this: str, that: str) -> str:
+    return f'<{this=}, {that=}>'
+
+@my_annotation('foo', 'bar')
+def fn(x: int) -> int:
+    return x * 10
+
+print(fn._annotations_)
