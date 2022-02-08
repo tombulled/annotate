@@ -22,16 +22,21 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: "3.9"
+          cache: pip
 
       - name: Install Poetry
-        run: python -m pip install poetry && poetry debug
+        run: |
+          pip install --quiet poetry
+          pip show poetry
 
       - name: Bump Version
         run: poetry version patch
 
       - name: Get Package Metadata
         id: package
-        run: echo ::set-output name=version::$(poetry version --short) name=name::$(poetry version | cut -d ' ' -f 1)
+        run: |
+          echo ::set-output name=name::$(poetry version | cut -d ' ' -f 1)
+          echo ::set-output name=version::$(poetry version --short)
 
       - name: Build
         run: poetry build
