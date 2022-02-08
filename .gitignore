@@ -134,4 +134,4 @@ dmypy.json
 # tst.py
 # tst.*.py
 _.*.py
-# .ignore/
+.ignore/

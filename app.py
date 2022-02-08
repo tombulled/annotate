@@ -1,63 +1,101 @@
-from typing import Any
 import annotate
 import dataclasses
+from annotate import marker, annotation
 
 @dataclasses.dataclass
 class Route:
     path: str
     method: str
 
-class Annotation:
-    key: Any
+'''
+def description(description: str) -> annotate.Annotation:
+    return annotate.Annotation('description', description, inherited=False, repeatable=True)
 
-    def __init__(self, key: Any):
-        self.key = key
+@description('awesome!')
+@description('cool!')
+class Foo:
+    def __init_subclass__(cls) -> None:
+        print('orgin init subclass called')
+        return cls
 
-    def __call__(self, *args, **kwargs):
-        def decorate(obj):
-            value = self.hook(*args, **kwargs)
+    def some_method(self): ...
 
-            annotate.init(obj)
+class Bar(Foo):...
+class Baz(Bar):...
 
-            annotations = annotate.get(obj)
+print(Foo._annotations_)
+print(Bar._annotations_)
+print(Baz._annotations_)
 
-            if self.key in annotations:
-                value = self.replace(annotations[self.key], value)
+def route(*paths: str, **kwargs):
+    routes = [
+        Route(path, **kwargs)
+        for path in paths
+    ]
 
-            annotations[self.key] = value
+    annotations = [
+        annotate.Annotation('route', route, repeatable=True)
+        for route in routes
+    ]
 
-            return obj
+    def wrapper(obj):
+        for annotation in annotations:
+            annotate.annotate(obj, annotation)
 
-        return decorate
+        return obj
 
-    @staticmethod
-    def hook(x):
-        return x
+    return wrapper
 
-    @staticmethod
-    def resolve(old, new):
-        return new
-
-class Marker(Annotation):
-    def __call__(self, obj):
-        return super().__call__(None)(obj)
-
-class RouteAnnotation(Annotation):
-    @staticmethod
-    def hook(*paths: str, **kwargs):
-        return [
-            Route(path, **kwargs)
-            for path in paths
-        ]
-
-    @staticmethod
-    def resolve(old, new):
-        return old + new
-
-route = Annotation('route')
-deprecated = Marker('deprecated')
-
-@route('/foo')
-@deprecated
+@route('/foo', '/bar', method='GET')
+@route('/baz', '/bat', method='POST')
 def foo():
     ...
+
+print(foo._annotations_)
+
+@annotate.annotation('my_annotation', inherited=True)
+def my_annotation(this: str, that: str) -> str:
+    return f'<{this=}, {that=}>'
+
+@my_annotation('foo', 'bar')
+def fn(x: int) -> int:
+    return x * 10
+
+print(fn._annotations_)
+'''
+
+@marker
+def deprecated() -> bool:
+    return True
+
+@annotation(key='route')
+def get(path: str, /) -> Route:
+    return Route(
+        path = path,
+        method = 'GET',
+    )
+
+@annotation(key='algComplexity', inherited=False)
+def algorithmic_complexity(degree: int) -> int:
+    return degree ** 10
+
+@deprecated
+@get('/foo')
+@algorithmic_complexity(15)
+def foo(): ...
+
+# print(foo._annotations_)
+
+@deprecated
+class Foo: pass
+
+class Bar(Foo): pass
+
+route_1 = annotate.Annotation('route', value='route_1', repeatable=True, inherited=False)
+route_2 = annotate.Annotation('route', value='route_2', repeatable=True, inherited=True)
+
+@route_1
+@route_2
+def foo(): pass
+
+print(foo._annotations_)
