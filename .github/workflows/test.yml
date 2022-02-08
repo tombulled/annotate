@@ -3,8 +3,8 @@ name: Test
 on: push
 
 jobs:
-  build:
-    name: Build
+  test:
+    name: 🔨 Test
     runs-on: ubuntu-latest
 
     steps:
