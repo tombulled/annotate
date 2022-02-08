@@ -1,6 +1,9 @@
 name: 🚨 CI
 
-on: push
+# on: push
+on:
+  push:
+    branches: [non-existent]
 
 jobs:
   unit_tests:

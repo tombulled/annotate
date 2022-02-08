@@ -34,9 +34,9 @@ jobs:
       - name: Bump Version
         run: poetry version patch
 
-      - name: Get Version
-        id: package-version
-        run: echo ::set-output name=version::$(poetry version)
+      - name: Get Package Metadata
+        id: package
+        run: echo ::set-output name=version::$(poetry version --short) name=name::$(poetry version | cut -d ' ' -f 1)
 
       - name: Build
         run: poetry build
@@ -47,8 +47,8 @@ jobs:
         tag_name: 
         with:
           files: |
-            *-${{ steps.package-version.outputs.version }}.tar.gz
-            *-${{ steps.package-version.outputs.version }}-py3-none-any.whl
+            ${{ steps.package.outputs.name }}-${{ steps.package.outputs.version }}.tar.gz
+            ${{ steps.package.outputs.name }}-${{ steps.package.outputs.version }}-py3-none-any.whl
 
       - name: Tag
         run: echo "Tagging here..."
