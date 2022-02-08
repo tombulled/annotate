@@ -1,6 +1,9 @@
 import dataclasses
 import typing
 
+# NOTEs:
+#   * Plumb in an event framework? e.g. @on(events.Annotate), @on(events.InheritAnnotations)
+
 # errors
 class TargetException(Exception): pass
 
@@ -31,16 +34,16 @@ class Attribute:
 
 annotations = Attribute('_annotations_')
 
-get_annotations = annotations.get
+get_raw_annotations = annotations.get
 has_annotations = annotations.has
 set_annotations = annotations.set
 del_annotations = annotations.delete
 setdefault_annotations = annotations.setdefault
 
-def get_annotations_as_dict(obj):
+def get_annotations(obj):
     return {
         annotation.key: annotation.value
-        for annotation in get_annotations(obj).values()
+        for annotation in get_raw_annotations(obj).values()
     }
 
 @dataclasses.dataclass
@@ -96,18 +99,33 @@ def annotate(obj, annotation):
     else:
         annotations[annotation.key] = annotation
 
-def annotation(key: str, /, **opts: bool):
-    annotation: Annotation = Annotation(
-        key = key,
-        **opts,
-    )
-
-    def decorate(func):
-        def wrapper(*args, **kwargs):
-            annotation.value = func(*args, **kwargs)
-
-            return annotation
+def annotation(func: typing.Optional[typing.Callable] = None, /, **kwargs):
+    if func is None:
+        def wrapper(func):
+            return annotation(func, **kwargs)
 
         return wrapper
 
-    return decorate
+    opts = {
+        **dict(key=func.__name__),
+        **kwargs
+    }
+
+    def wrapper(*args, **kwargs):
+        return Annotation(
+            **{
+                **opts,
+                **dict(value=func(*args, **kwargs)),
+            }
+        )
+
+    return wrapper
+
+def marker(func: typing.Optional[typing.Callable] = None, /, **kwargs):
+    if func is None:
+        def wrapper(func):
+            return marker(func, **kwargs)
+
+        return wrapper
+
+    return annotation(func, **kwargs)()

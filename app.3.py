@@ -1,11 +1,13 @@
 import annotate
 import dataclasses
+from annotate import marker, annotation
 
 @dataclasses.dataclass
 class Route:
     path: str
     method: str
 
+'''
 def description(description: str) -> annotate.Annotation:
     return annotate.Annotation('description', description, inherited=False, repeatable=True)
 
@@ -60,3 +62,26 @@ def fn(x: int) -> int:
     return x * 10
 
 print(fn._annotations_)
+'''
+
+@marker
+def deprecated() -> bool:
+    return True
+
+@annotation(key='route')
+def get(path: str, /) -> Route:
+    return Route(
+        path = path,
+        method = 'GET',
+    )
+
+@annotation(key='algComplexity', inherited=False)
+def algorithmic_complexity(degree: int) -> int:
+    return degree ** 10
+
+@deprecated
+@get('/foo')
+@algorithmic_complexity(15)
+def foo(): ...
+
+print(foo._annotations_)
