@@ -92,10 +92,12 @@ class Foo: pass
 class Bar(Foo): pass
 
 route_1 = annotate.Annotation('route', value='route_1', repeatable=True, inherited=False)
-route_2 = annotate.Annotation('route', value='route_2', repeatable=True, inherited=True)
+route_2 = annotate.Annotation('route', value='route_2', repeatable=True, inherited=True, targets=(str,))
 
 @route_1
-@route_2
+# @route_2
 def foo(): pass
+
+annotate.annotate(foo, route_2, repeat=False, force=True)
 
 print(foo._annotations_)

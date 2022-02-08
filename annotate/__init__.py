@@ -10,6 +10,7 @@ import typing
 
 # TODO:
 #   Move `Attribute` implementation to `stash` (and add `stash` as a dependency)
+
 @dataclasses.dataclass
 class Attribute:
     attr: str
@@ -69,7 +70,7 @@ class Annotation:
     def is_targetted(self, obj) -> bool:
         return isinstance(obj, self.targets)
 
-    def can_merge(self, annotation) -> bool:
+    def is_compatible(self, annotation) -> bool:
         return dataclasses.replace(self, value=None) == dataclasses.replace(
             annotation, value=None
         )
@@ -103,8 +104,8 @@ def decorate(cls: type) -> type:
     cls.__init_subclass__ = init_subclass
 
 
-def annotate(obj: typing.Any, annotation: Annotation) -> None:
-    if not annotation.is_targetted(obj):
+def annotate(obj: typing.Any, annotation: Annotation, /, *, force: bool = False, repeat: bool = True) -> None:
+    if not annotation.is_targetted(obj) and not force:
         raise TypeError(
             f"object with type {type(obj)} not targetted by annotation {annotation!r}"
         )
@@ -114,13 +115,14 @@ def annotate(obj: typing.Any, annotation: Annotation) -> None:
 
     annotations = setdefault_annotations(obj, {})
 
-    if annotation.repeatable:
+    if annotation.repeatable and repeat:
         if annotation.key not in annotations:
             annotation = dataclasses.replace(annotation, value=[annotation.value])
         else:
-            assert annotations[annotation.key].can_merge(
+            if not annotations[annotation.key].is_compatible(
                 annotation
-            ), "annotations cannot merge, have conflicting options."
+            ):
+                raise ValueError("new annotation cannot merge with existing, repeatable annotation due to conflicting options")
 
             annotation = dataclasses.replace(
                 annotation, value=annotations[annotation.key].value + [annotation.value]
