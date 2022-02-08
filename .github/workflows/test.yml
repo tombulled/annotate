@@ -36,6 +36,7 @@ jobs:
         run: |
           echo ::set-output name=name::$(poetry version | cut -d ' ' -f 1)
           echo ::set-output name=version::$(poetry version --short)
+          echo ${{ steps.package.outputs.name }}
 
       - name: Build
         run: poetry build
