@@ -85,3 +85,8 @@ def algorithmic_complexity(degree: int) -> int:
 def foo(): ...
 
 print(foo._annotations_)
+
+@deprecated
+class Foo: pass
+
+class Bar(Foo): pass

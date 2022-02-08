@@ -1,11 +1,9 @@
 import dataclasses
 import typing
+import types
 
 # NOTEs:
 #   * Plumb in an event framework? e.g. @on(events.Annotate), @on(events.InheritAnnotations)
-
-# errors
-class TargetException(Exception): pass
 
 # TODO: Move this implementation to `stash`
 @dataclasses.dataclass
@@ -46,7 +44,7 @@ def get_annotations(obj):
         for annotation in get_raw_annotations(obj).values()
     }
 
-@dataclasses.dataclass
+@dataclasses.dataclass(frozen=True)
 class Annotation:
     key: str
     value: typing.Any = None
@@ -67,37 +65,54 @@ class Annotation:
     def is_targetted(self, obj) -> bool:
         return isinstance(obj, self.targets)
 
+def decorate(cls: type) -> type:
+    orig_init_subclass = (
+        cls.__init_subclass__.__func__
+        if not isinstance(cls.__init_subclass__, types.BuiltinMethodType)
+        else None
+    )
+
+    @classmethod
+    def init_subclass(subcls, **kwargs):
+        if orig_init_subclass is not None:
+            orig_init_subclass(subcls, **kwargs)
+
+        annotations = setdefault_annotations(subcls, {})
+
+        set_annotations(subcls, {
+            key: annotation
+            for key, annotation in annotations.items()
+            if annotation.inherited
+        })
+
+        return subcls
+
+    cls.__init_subclass__ = init_subclass
+
 def annotate(obj, annotation):
-    if not isinstance(obj, annotation.targets):
-        raise TargetException('obj type not targetted by this annotation')
+    if not annotation.is_targetted(obj):
+        raise TypeError(f'object with type {type(obj)} not targetted by annotation {annotation!r}')
 
     if isinstance(obj, type) and not has_annotations(obj):
-        orig_init_subclass = obj.__init_subclass__.__func__
+        print('decorating class')
 
-        def init_subclass(cls, **kwargs):
-            orig_init_subclass(cls, **kwargs)
-
-            annotations = setdefault_annotations(cls, {})
-
-            cls._annotations_ = {
-                key: annotation
-                for key, annotation in annotations.items()
-                if annotation.inherited
-            }
-            
-            return cls
-
-        obj.__init_subclass__ = classmethod(init_subclass)
+        decorate(obj)
 
     annotations = setdefault_annotations(obj, {})
 
+    # TODO: Implement Annotation.merge
     if annotation.repeatable:
         if annotation.key not in annotations:
-            annotations[annotation.key] = dataclasses.replace(annotation, value = [annotation.value])
+            # annotations[annotation.key] = dataclasses.replace(annotation, value = [annotation.value])
+            annotation = dataclasses.replace(annotation, value = [annotation.value])
         else:
-            annotations[annotation.key].value.append(annotation.value)
-    else:
-        annotations[annotation.key] = annotation
+            # TODO: Assert all opts (exept `value`) are identical here.
+            # Maybe annotations should be frozen.
+            # annotations[annotation.key].value.append(annotation.value)
+            annotation = dataclasses.replace(annotation, value = annotation.value + [annotation.value])
+            # annotation = dataclasses.replace(annotation, value = annotation.value + [annotation.value])
+    
+    annotations[annotation.key] = annotation
 
 def annotation(func: typing.Optional[typing.Callable] = None, /, **kwargs):
     if func is None:
