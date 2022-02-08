@@ -1,24 +1,21 @@
 # annotate
-Annotation System Inspired by Java Annotations
+Python Annotation System Inspired by Java Annotations
 
 ## Installation
-### Specific Version (recommended)
 ```console
-pip install git+https://github.com/tombulled/annotate@v0.1.1
-```
-### Latest Version
-```console
-pip install git+https://github.com/tombulled/annotate@main
+pip install git+https://github.com/tombulled/annotate@v0.1.2
 ```
 
 ## Usage
 
 ### Marker Annotation
-An annotation that has no value
+An annotation that has a specific, known value
 ```python
 import annotate
 
-deprecated = annotate.marker('deprecated')
+@annotate.marker
+def deprecated() -> bool:
+    return True
 
 @deprecated
 def foo():
@@ -26,33 +23,40 @@ def foo():
 ```
 
 ```python
->>> foo._annotations_
-{'deprecated': None}
+>>> annotate.get_annotations(foo)
+{'deprecated': True}
 ```
 
 ### Single-Value Annotation
-An annotation that has a single value
+An annotation that has a single, configurable value
 ```python
 import annotate
 
-priority = annotate.annotation('priority')
+@annotate.annotation
+def description(description: str, /) -> str:
+    return description
 
-@priority(3)
+@description('Really awesome function!')
 def foo():
     pass
 ```
 
 ```python
->>> foo._annotations_
-{'priority': 3}
+>>> annotate.get_annotations(foo)
+{'description': 'Really awesome function!'}
 ```
 
 ### Multi-Value Annotation
-An annotation that has multiple values
+An annotation that has multiple, configurable values
 ```python
 import annotate
 
-metadata = annotate.annotation('metadata', hook=dict)
+@annotate.annotation
+def metadata(*, author: str, version: str) -> dict:
+    return dict(
+        author = author,
+        version = version,
+    )
 
 @metadata(author='sam', version='1.0.1')
 def foo():
@@ -60,7 +64,7 @@ def foo():
 ```
 
 ```python
->>> foo._annotations_
+>>> annotate.get_annotations(foo)
 {'metadata': {'author': 'sam', 'version': '1.0.1'}}
 ```
 
@@ -68,21 +72,27 @@ def foo():
 ```python
 import annotate
 import dataclasses
-import operator
 
 @dataclasses.dataclass
 class Route:
     path: str
     method: str
 
-route = annotate.annotation(
-    'route',
-    hook = lambda *paths, **kwargs: [
-        Route(path, **kwargs)
-        for path in paths
-    ],
-    replace = operator.add
-)
+def route(*paths: str, **kwargs: str):
+    def wrapper(obj):
+        for path in paths:
+            annotate.annotate(
+                obj,
+                annotate.Annotation(
+                    key='route',
+                    value=Route(path, **kwargs),
+                    repeatable=True,
+                ),
+            )
+
+        return obj
+
+    return wrapper
 
 @route('/foo', '/bar', method='GET')
 @route('/cat', '/dog', method='POST')
@@ -91,6 +101,6 @@ def foo():
 ```
 
 ```python
->>> foo._annotations_
+>>> annotate.get_annotations(foo)
 {'route': [Route(path='/cat', method='POST'), Route(path='/dog', method='POST'), Route(path='/foo', method='GET'), Route(path='/bar', method='GET')]}
 ```
