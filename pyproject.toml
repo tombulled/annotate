@@ -11,7 +11,11 @@ keywords = ["python", "annotate", "label", "mark", "tag"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
-stash = {git = "https://github.com/tombulled/stash.git", rev = "v0.1.3"}
+stash = {git = "https://github.com/tombulled/stash.git", tag = "v0.1.3"}
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+black = "^22.1.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
