@@ -52,18 +52,18 @@ jobs:
       - name: Git Commit - Code Formatting
         run: |
           git add --all
-          git commit -m "🎨 Code Formatting"
+          git commit -m "Code Formatting"
 
-      # - name: Bump Version
-      #   id: bump
-      #   run: |
-      #     poetry version patch
-      #     echo ::set-output name=version::$(poetry version --short)
+      - name: Bump Version
+        id: bump
+        run: |
+          poetry version patch
+          echo ::set-output name=version::$(poetry version --short)
 
-      # - name: Git Commit - Version Bump
-      #   run: |
-      #     git add --all
-      #     git commit -m "🔖 Bump Version: ${{ steps.project.outputs.version }} -> ${{ steps.bump.outputs.version }}"
+      - name: Git Commit - Version Bump
+        run: |
+          git add --all
+          git commit -m "Bump Version: ${{ steps.project.outputs.version }} -> ${{ steps.bump.outputs.version }}"
 
       - name: Git Push
         run: git push
