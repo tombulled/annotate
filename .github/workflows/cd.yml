@@ -77,12 +77,12 @@ jobs:
         
       - name: Release
         uses: softprops/action-gh-release@v1
-        generate_release_notes: true
-        tag_name: v${{ steps.project.outputs.version }}
         with:
+          tag_name: v${{ steps.bump.outputs.version }}
+          generate_release_notes: true
           files: |
-            ${{ steps.project.outputs.name }}-${{ steps.project.outputs.version }}.tar.gz
-            ${{ steps.project.outputs.name }}-${{ steps.project.outputs.version }}-py3-none-any.whl
+            ${{ steps.project.outputs.name }}-${{ steps.bump.outputs.version }}.tar.gz
+            ${{ steps.project.outputs.name }}-${{ steps.bump.outputs.version }}-py3-none-any.whl
 
       - name: Publish
         run: echo "Publish to PyPI here..."
