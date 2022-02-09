@@ -1,4 +1,4 @@
-name: 🚀 CD
+name: CD
 
 on:
   push:
@@ -10,26 +10,78 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 🧑‍💻 Checkout Branch
+      - name: Checkout
         uses: actions/checkout@v2
 
-      - name: 🗃️ Setup Cache
+      - name: Cache
         uses: actions/cache@v2
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('pyproject.toml') }}
           restore-keys: ${{ runner.os }}-pip-
 
-      - name: 🐍 Setup Python
+      - name: Setup Python 3.9
         uses: actions/setup-python@v2
         with:
           python-version: "3.9"
 
-      - name: 📝 Install Poetry
-        run: python -m pip install poetry
+      - name: Configure Git
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
 
-      - name: 🔨 Build Package
+      - name: Install Dependencies
+        run: pip install poetry black
+
+      - name: Get Project Metadata
+        id: project
+        run: |
+          project_name="$(poetry version | cut -d ' ' -f 1)"
+          project_version="$(poetry version --short)"
+
+          echo "project.name: '$project_name'"
+          echo "project.version: '$project_version'"
+
+          echo ::set-output name=name::$project_name
+          echo ::set-output name=version::$project_version
+
+      - name: Code Formatting
+        id: formatting
+        run: |
+          echo ::set-output name=changes::$(black --check --quiet annotate; echo $?)
+          black ${{ steps.project.outputs.name }}
+
+      - name: Git Commit - Code Formatting
+        if: steps.formatting.outputs.changes != 0
+        run: |
+          git add --all
+          git commit -m "Code Formatting"
+
+      - name: Bump Version
+        id: bump
+        run: |
+          poetry version patch
+          echo ::set-output name=version::$(poetry version --short)
+
+      - name: Git Commit - Version Bump
+        run: |
+          git add --all
+          git commit -m "Bump Version: ${{ steps.project.outputs.version }} -> ${{ steps.bump.outputs.version }}"
+
+      - name: Git Push
+        run: git push
+
+      - name: Build
         run: poetry build
+        
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ steps.bump.outputs.version }}
+          generate_release_notes: true
+          files: |
+            dist/${{ steps.project.outputs.name }}-${{ steps.bump.outputs.version }}.tar.gz
+            dist/${{ steps.project.outputs.name }}-${{ steps.bump.outputs.version }}-py3-none-any.whl
 
-      - name: ✨ Release
-        run: echo "Releasing here... (build, create release, tag, publish to pypi)"
+      - name: Publish
+        run: echo "Publish to PyPI here..."

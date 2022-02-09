@@ -1,4 +1,4 @@
-name: 🚨 CI
+name: CI
 
 on: push
 
@@ -8,23 +8,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 🧑‍💻 Checkout Branch
+      - name: Checkout
         uses: actions/checkout@v2
 
-      - name: 🗃️ Setup Cache
+      - name: Cache
         uses: actions/cache@v2
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('pyproject.toml') }}
           restore-keys: ${{ runner.os }}-pip-
 
-      - name: 🐍 Setup Python
+      - name: Setup Python 3.9
         uses: actions/setup-python@v2
         with:
           python-version: "3.9"
 
-      - name: ⬇️ Install Dependencies
+      - name: Install Dependencies
         run: pip install .
 
-      - name: 🪄 Run Tests
+      - name: Run Tests
         run: python -c "print('All tests passed.')"

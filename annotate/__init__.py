@@ -3,6 +3,7 @@ from .attribute import annotations
 from .models import Annotation
 from .decorators import annotation, marker
 
+
 get_raw_annotations = annotations.get
 has_annotations = annotations.has
 set_annotations = annotations.set
