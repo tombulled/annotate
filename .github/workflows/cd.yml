@@ -72,17 +72,17 @@ jobs:
       - name: Git Push
         run: git push
 
-      # - name: Build
-      #   run: poetry build
+      - name: Build
+        run: poetry build
         
-      # - name: Release
-      #   uses: softprops/action-gh-release@v1
-      #   generate_release_notes: true
-      #   tag_name: v${{ steps.project.outputs.version }}
-      #   with:
-      #     files: |
-      #       ${{ steps.project.outputs.name }}-${{ steps.project.outputs.version }}.tar.gz
-      #       ${{ steps.project.outputs.name }}-${{ steps.project.outputs.version }}-py3-none-any.whl
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        generate_release_notes: true
+        tag_name: v${{ steps.project.outputs.version }}
+        with:
+          files: |
+            ${{ steps.project.outputs.name }}-${{ steps.project.outputs.version }}.tar.gz
+            ${{ steps.project.outputs.name }}-${{ steps.project.outputs.version }}-py3-none-any.whl
 
       - name: Publish
         run: echo "Publish to PyPI here..."
