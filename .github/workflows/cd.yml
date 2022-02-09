@@ -1,8 +1,9 @@
 name: CD
 
 on:
-  push:
-    branches: [main]
+  push
+  # push:
+  #   branches: [main]
 
 jobs:
   release:
@@ -25,31 +26,59 @@ jobs:
         with:
           python-version: "3.9"
 
-      - name: Install Poetry
+      - name: Configure Git
         run: |
-          pip install --quiet poetry
-          pip show poetry
+          git config user.name github-actions
+          git config user.email github-actions@github.com
 
-      - name: Bump Version
-        run: poetry version patch
+      - name: Install Dependencies
+        run: pip install poetry black
 
-      - name: Get Package Metadata
-        id: package
+      - name: Get Project Metadata
+        id: project
         run: |
-          echo ::set-output name=name::$(poetry version | cut -d ' ' -f 1)
-          echo ::set-output name=version::$(poetry version --short)
+          project_name="$(poetry version | cut -d ' ' -f 1)"
+          project_version="$(poetry version --short)"
 
-      - name: Build
-        run: poetry build
+          echo "project.name: '$project_name'"
+          echo "project.version: '$project_version'"
+
+          echo ::set-output name=name::$project_name
+          echo ::set-output name=version::$project_version
+
+      - name: Code Formatting
+        run: black ${{ steps.project.outputs.name }}/
+
+      - name: Git Commit - Code Formatting
+        run: |
+          git add --all
+          git commit -m "🎨 Code Formatting"
+
+      # - name: Bump Version
+      #   id: bump
+      #   run: |
+      #     poetry version patch
+      #     echo ::set-output name=version::$(poetry version --short)
+
+      # - name: Git Commit - Version Bump
+      #   run: |
+      #     git add --all
+      #     git commit -m "🔖 Bump Version: ${{ steps.project.outputs.version }} -> ${{ steps.bump.outputs.version }}"
+
+      - name: Git Push
+        run: git push
+
+      # - name: Build
+      #   run: poetry build
         
-      - name: Release
-        uses: softprops/action-gh-release@v1
-        generate_release_notes: true
-        tag_name: v${{ steps.package.outputs.version }}
-        with:
-          files: |
-            ${{ steps.package.outputs.name }}-${{ steps.package.outputs.version }}.tar.gz
-            ${{ steps.package.outputs.name }}-${{ steps.package.outputs.version }}-py3-none-any.whl
+      # - name: Release
+      #   uses: softprops/action-gh-release@v1
+      #   generate_release_notes: true
+      #   tag_name: v${{ steps.project.outputs.version }}
+      #   with:
+      #     files: |
+      #       ${{ steps.project.outputs.name }}-${{ steps.project.outputs.version }}.tar.gz
+      #       ${{ steps.project.outputs.name }}-${{ steps.project.outputs.version }}-py3-none-any.whl
 
       - name: Publish
         run: echo "Publish to PyPI here..."
