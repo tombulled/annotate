@@ -8,18 +8,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # - name: Checkout
       - uses: actions/checkout@v2
-
-      - name: Setup Python
-        uses: actions/setup-python@v2
+      - uses: actions/setup-python@v2
         with:
           python-version: "3.9"
           cache: pip
           cache-dependency-path: pyproject.toml
-
-      - name: Install Dependencies
-        run: pip install .
-
-      - name: Run Tests
-        run: python -c "print('All tests passed.')"
+      - run: pip install .
+      - run: python -c "print('All tests passed.')"
