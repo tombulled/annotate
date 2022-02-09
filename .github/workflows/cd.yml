@@ -53,7 +53,7 @@ jobs:
           black ${{ steps.project.outputs.name }}
 
       - name: Git Commit - Code Formatting
-        if: steps.formatting.outputs.changes == 1
+        if: steps.formatting.outputs.changes != 0
         run: |
           git add --all
           git commit -m "Code Formatting"
