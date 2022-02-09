@@ -47,9 +47,13 @@ jobs:
           echo ::set-output name=version::$project_version
 
       - name: Code Formatting
-        run: black ${{ steps.project.outputs.name }}/
+        id: formatting
+        run: |
+          echo ::set-output name=changs::$(black --check --quiet annotate; echo $?)
+          black ${{ steps.project.outputs.name }}
 
       - name: Git Commit - Code Formatting
+        if: steps.formatting.outputs.changes == 1
         run: |
           git add --all
           git commit -m "Code Formatting"
