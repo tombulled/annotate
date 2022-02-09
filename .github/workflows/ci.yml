@@ -9,10 +9,18 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+
       - uses: actions/setup-python@v2
         with:
           python-version: "3.9"
-          cache: pip
-          cache-dependency-path: pyproject.toml
+
+      - uses: actions/cache@v2
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('pyproject.toml') }}
+          restore-keys: ${{ runner.os }}-pip-
+
       - run: pip install .
+        if: steps.cache-primes.outputs.cache-hit != 'true'
+        
       - run: python -c "print('All tests passed.')"
