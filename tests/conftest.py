@@ -5,15 +5,13 @@ import annotate
 
 @pytest.fixture
 def func() -> types.FunctionType:
-    def foo():
-        pass
+    def foo(): ...
 
     return foo
 
 @pytest.fixture
 def cls() -> type:
-    class Foo:
-        pass
+    class Foo: ...
 
     return Foo
 
