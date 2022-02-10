@@ -32,31 +32,19 @@ jobs:
           git config user.email github-actions@github.com
 
       - name: Install Dependencies
-        run: pip install poetry black
-
-      - name: Extract Project Metadata
-        id: project
-        run: |
-          project_name="$(poetry version | cut -d ' ' -f 1)"
-          project_version="$(poetry version --short)"
-
-          echo "project.name: '$project_name'"
-          echo "project.version: '$project_version'"
-
-          echo ::set-output name=name::$project_name
-          echo ::set-output name=version::$project_version
+        run: pip install black poetry
 
       - name: Format Code
         id: formatting
         run: |
-          echo ::set-output name=changes::$(black --check --quiet annotate; echo $?)
-          black ${{ steps.project.outputs.name }}
+          echo ::set-output name=changes::$(black --check --quiet .; echo $?)
+          black .
 
       - name: Commmit - Code Formatting
         if: steps.formatting.outputs.changes != 0
         run: |
-          git add --all
-          git commit -m "🎨 Code Formatting"
+          git add .
+          git commit -m "🎨 Format Code"
 
       - name: Bump Version
         id: bump
@@ -66,8 +54,8 @@ jobs:
 
       - name: Commit - Version Bump
         run: |
-          git add --all
-          git commit -m "🔖 Bump Version: ${{ steps.project.outputs.version }} -> ${{ steps.bump.outputs.version }}"
+          git add .
+          git commit -m "🔖 Release Version ${{ steps.bump.outputs.version }}"
 
       - name: Git Push
         run: git push
@@ -80,9 +68,4 @@ jobs:
         with:
           tag_name: v${{ steps.bump.outputs.version }}
           generate_release_notes: true
-          files: |
-            dist/${{ steps.project.outputs.name }}-${{ steps.bump.outputs.version }}.tar.gz
-            dist/${{ steps.project.outputs.name }}-${{ steps.bump.outputs.version }}-py3-none-any.whl
-
-      - name: Publish to PyPI
-        run: echo "Publish to PyPI here..."
+          files: dist/*
