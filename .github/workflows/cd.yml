@@ -37,7 +37,7 @@ jobs:
       - name: Format Code
         id: formatting
         run: |
-          echo ::set-output name=changes::$(black --check --quiet annotate; echo $?)
+          echo ::set-output name=changes::$(black --check --quiet .; echo $?)
           black .
 
       - name: Commmit - Code Formatting
