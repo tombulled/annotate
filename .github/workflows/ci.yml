@@ -26,7 +26,6 @@ jobs:
 
       - name: Install Dependencies
         run: pip install . pytest
-        if: steps.cache.outputs.cache-hit != 'true'
 
       - name: Run Tests
         run: pytest
