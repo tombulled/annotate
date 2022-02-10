@@ -24,7 +24,6 @@ def annotation() -> annotate.Annotation:
 @pytest.fixture
 def annotations() -> typing.List[annotate.Annotation]:
     return [
-        annotate.Annotation('key-a', 'value-a'),
-        annotate.Annotation('key-b', 'value-b'),
-        annotate.Annotation('key-c', 'value-c'),
+        annotate.Annotation(f'key-{index}', f'value-{index}')
+        for index in range(3)
     ]

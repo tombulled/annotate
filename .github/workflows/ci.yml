@@ -21,7 +21,9 @@ jobs:
           key: ${{ runner.os }}-pip-${{ hashFiles('pyproject.toml') }}
           restore-keys: ${{ runner.os }}-pip-
 
-      - run: pip install .
+      - name: Install Project
+        run: pip install .
         if: steps.cache.outputs.cache-hit != 'true'
 
-      - run: python -c "print('All tests passed.')"
+      - name: Run Tests
+        run: pytest
