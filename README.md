@@ -1,15 +1,18 @@
 # annotate
 Python Annotation System Inspired by Java Annotations
 
+## About
+Annotations are tags that store object metadata (e.g. for functions/classes)
+
 ## Installation
 ```console
-pip install git+https://github.com/tombulled/annotate@v0.1.2
+pip install git+https://github.com/tombulled/annotate
 ```
 
 ## Usage
 
-### Marker Annotation
-An annotation that has a specific, known value
+### Marker
+An annotation with a fixed value
 ```python
 import annotate
 
@@ -27,27 +30,8 @@ def foo():
 {'deprecated': True}
 ```
 
-### Single-Value Annotation
-An annotation that has a single, configurable value
-```python
-import annotate
-
-@annotate.annotation
-def description(description: str, /) -> str:
-    return description
-
-@description('Really awesome function!')
-def foo():
-    pass
-```
-
-```python
->>> annotate.get_annotations(foo)
-{'description': 'Really awesome function!'}
-```
-
-### Multi-Value Annotation
-An annotation that has multiple, configurable values
+### Annotation
+An annotation with a configurable value
 ```python
 import annotate
 
@@ -68,7 +52,72 @@ def foo():
 {'metadata': {'author': 'sam', 'version': '1.0.1'}}
 ```
 
-### Advanced Annotating
+## Repeatable Annotation
+An annotation that can be used to annotate the same object multiple times
+```python
+import annotate
+
+@annotate.annotation(repeatable=True)
+def tag(tag: str, /) -> str:
+    return tag
+
+@tag('awesome')
+@tag('cool')
+@tag('funky')
+def foo():
+    pass
+```
+
+```python
+>>> annotate.get_annotations(foo)
+{'tag': ['funky', 'cool', 'awesome']}
+```
+
+## Inherited Annotation
+An annotation that gets added to subclasses of an annotated class
+```python
+import annotate
+
+@annotate.annotation(inherited=True)
+def identifier(identifier: str, /) -> str:
+    return identifier
+
+@identifier('abc')
+class Class:
+    pass
+
+class Subclass(Class):
+    pass
+```
+
+```python
+>>> annotate.get_annotations(Class)
+{'identifier': 'abc'}
+>>> annotate.get_annotations(Subclass)
+{'identifier': 'abc'}
+```
+
+## Targetted Annotation
+An annotation that targets objects of specific types
+```python
+import annotate
+import types
+
+@annotate.annotation(targets=(types.FunctionType,))
+def description(description: str, /) -> str:
+    return description
+
+@description('A really cool function')
+def foo():
+    pass
+```
+
+```python
+>>> annotate.get_annotations(foo)
+{'description': 'A really cool function'}
+```
+
+### Advanced Annotations
 ```python
 import annotate
 import dataclasses
