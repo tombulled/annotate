@@ -7,7 +7,7 @@ license = "MIT"
 readme = "README.md"
 homepage = "https://github.com/tombulled/annotate"
 repository = "https://github.com/tombulled/annotate"
-keywords = ["python", "annotate", "label", "mark", "tag"]
+keywords = ["python", "annotate", "annotation", "marker", "label", "mark", "tag"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
