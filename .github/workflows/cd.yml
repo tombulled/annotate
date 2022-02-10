@@ -10,18 +10,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout Repository
+        uses: actions/checkout@v2
 
-      - uses: actions/setup-python@v2
+      - name: Setup Python
+        uses: actions/setup-python@v2
         with:
-          python-version: "3.9"
+          python-version: "3.8"
 
-      - uses: actions/cache@v2
+      - name: Restore Cache
+        uses: actions/cache@v2
         id: cache
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('pyproject.toml') }}
-          restore-keys: ${{ runner.os }}-pip-
+          key: pip-${{ hashFiles('pyproject.toml') }}
+          restore-keys: pip-
 
       - name: Configure Git
         run: |
@@ -31,7 +34,7 @@ jobs:
       - name: Install Dependencies
         run: pip install poetry black
 
-      - name: Get Project Metadata
+      - name: Extract Project Metadata
         id: project
         run: |
           project_name="$(poetry version | cut -d ' ' -f 1)"
@@ -43,17 +46,17 @@ jobs:
           echo ::set-output name=name::$project_name
           echo ::set-output name=version::$project_version
 
-      - name: Code Formatting
+      - name: Format Code
         id: formatting
         run: |
           echo ::set-output name=changes::$(black --check --quiet annotate; echo $?)
           black ${{ steps.project.outputs.name }}
 
-      - name: Git Commit - Code Formatting
+      - name: Commmit - Code Formatting
         if: steps.formatting.outputs.changes != 0
         run: |
           git add --all
-          git commit -m "Code Formatting"
+          git commit -m "🎨 Code Formatting"
 
       - name: Bump Version
         id: bump
@@ -61,18 +64,18 @@ jobs:
           poetry version patch
           echo ::set-output name=version::$(poetry version --short)
 
-      - name: Git Commit - Version Bump
+      - name: Commit - Version Bump
         run: |
           git add --all
-          git commit -m "Bump Version: ${{ steps.project.outputs.version }} -> ${{ steps.bump.outputs.version }}"
+          git commit -m "🔖 Bump Version: ${{ steps.project.outputs.version }} -> ${{ steps.bump.outputs.version }}"
 
       - name: Git Push
         run: git push
 
-      - name: Build
+      - name: Poetry Build
         run: poetry build
         
-      - name: Release
+      - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: v${{ steps.bump.outputs.version }}
@@ -81,5 +84,5 @@ jobs:
             dist/${{ steps.project.outputs.name }}-${{ steps.bump.outputs.version }}.tar.gz
             dist/${{ steps.project.outputs.name }}-${{ steps.bump.outputs.version }}-py3-none-any.whl
 
-      - name: Publish
+      - name: Publish to PyPI
         run: echo "Publish to PyPI here..."
