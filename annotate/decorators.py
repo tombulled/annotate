@@ -12,9 +12,11 @@ def annotation(func: typing.Optional[typing.Callable] = None, /, **opts: typing.
         return wrapper
 
     def wrapper(*args, **kwargs):
-        return models.Annotation(
-            **(dict(key=func.__name__) | opts | dict(value=func(*args, **kwargs)))
-        )
+        return models.Annotation(**{
+            **dict(key=func.__name__),
+            **opts,
+            **dict(value=func(*args, **kwargs)),
+        })
 
     return wrapper
 
