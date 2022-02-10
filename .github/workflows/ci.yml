@@ -21,8 +21,8 @@ jobs:
           key: ${{ runner.os }}-pip-${{ hashFiles('pyproject.toml') }}
           restore-keys: ${{ runner.os }}-pip-
 
-      - name: Install Project
-        run: pip install .
+      - name: Install Dependencies
+        run: pip install . pytest
         if: steps.cache.outputs.cache-hit != 'true'
 
       - name: Run Tests
