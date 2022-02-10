@@ -128,7 +128,7 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# Custom
+# Project
 app.py
 app.*.py
 tst.py
