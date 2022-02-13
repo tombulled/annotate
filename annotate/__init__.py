@@ -1,5 +1,5 @@
 from .api import annotate
-from .attribute import annotations
+from .attributes import annotations
 from .models import Annotation
 from .decorators import annotation, marker
 
