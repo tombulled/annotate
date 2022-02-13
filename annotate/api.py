@@ -2,7 +2,7 @@ import dataclasses
 import types
 import typing
 
-from . import attribute, models
+from . import attributes, models
 
 
 def decorate(cls: type) -> type:
@@ -17,9 +17,9 @@ def decorate(cls: type) -> type:
         if orig_init_subclass is not None:
             orig_init_subclass(subcls, **kwargs)
 
-        annotations = attribute.annotations.setdefault(subcls)
+        annotations = attributes.annotations.setdefault(subcls)
 
-        attribute.annotations.set(
+        attributes.annotations.set(
             subcls,
             {
                 key: annotation
@@ -46,10 +46,10 @@ def annotate(
             f"object with type {type(obj)} not targetted by annotation {annotation!r}"
         )
 
-    if isinstance(obj, type) and not attribute.annotations.has(obj):
+    if isinstance(obj, type) and not attributes.annotations.has(obj):
         decorate(obj)
 
-    annotations = attribute.annotations.setdefault(obj)
+    annotations = attributes.annotations.setdefault(obj)
 
     if annotation.repeatable and repeat:
         if annotation.key not in annotations:
