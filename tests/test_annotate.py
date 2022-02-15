@@ -72,3 +72,10 @@ def test_annotate_targetted(func: types.FunctionType) -> None:
 
     with pytest.raises(TypeError):
         annotate.annotate(func, annotation_type)
+
+def test_annotate_not_stored(func: types.FunctionType) -> None:
+    annotation: annotate.Annotation = annotate.Annotation('key', 'value', stored=False)
+
+    annotate.annotate(func, annotation)
+
+    assert annotate.get_raw_annotations(func) == {}
