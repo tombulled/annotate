@@ -46,6 +46,9 @@ def annotate(
             f"object with type {type(obj)} not targetted by annotation {annotation!r}"
         )
 
+    if not annotation.stored:
+        return obj
+
     if isinstance(obj, type) and not attributes.annotations.has(obj):
         decorate(obj)
 

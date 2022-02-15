@@ -117,39 +117,20 @@ def foo():
 {'description': 'A really cool function'}
 ```
 
-### Advanced Annotations
+### Non-Stored Annotation
 ```python
 import annotate
-import dataclasses
 
-@dataclasses.dataclass
-class Route:
-    path: str
-    method: str
+@annotate.annotation(stored=False)
+def author(name: str, /) -> None:
+    pass
 
-def route(*paths: str, **kwargs: str):
-    def wrapper(obj):
-        for path in paths:
-            annotate.annotate(
-                obj,
-                annotate.Annotation(
-                    key='route',
-                    value=Route(path, **kwargs),
-                    repeatable=True,
-                ),
-            )
-
-        return obj
-
-    return wrapper
-
-@route('/foo', '/bar', method='GET')
-@route('/cat', '/dog', method='POST')
+@author('Tim')
 def foo():
     pass
 ```
 
 ```python
 >>> annotate.get_annotations(foo)
-{'route': [Route(path='/cat', method='POST'), Route(path='/dog', method='POST'), Route(path='/foo', method='GET'), Route(path='/bar', method='GET')]}
+{}
 ```

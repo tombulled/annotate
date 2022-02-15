@@ -10,6 +10,7 @@ class Annotation:
     value: typing.Any = None
     inherited: bool = False
     repeatable: bool = False
+    stored: bool = True
     targets: typing.Tuple[type] = dataclasses.field(
         default_factory=lambda: (type, object)
     )
