@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "annotate"
+name = "tombulled-annotate"
 version = "0.1.11"
 description = "Python Annotation System Inspired by Java Annotations"
 authors = ["Tom Bulled <26026015+tombulled@users.noreply.github.com>"]
@@ -8,6 +8,9 @@ readme = "README.md"
 homepage = "https://github.com/tombulled/annotate"
 repository = "https://github.com/tombulled/annotate"
 keywords = ["python", "annotate", "annotation", "marker", "label", "mark", "tag"]
+packages = [
+    {include = "annotate"}
+]
 
 [tool.poetry.dependencies]
 python = "^3.8"
