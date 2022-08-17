@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "tombulled-annotate"
-version = "0.1.12"
+version = "0.1.13"
 description = "Python Annotation System Inspired by Java Annotations"
 authors = ["Tom Bulled <26026015+tombulled@users.noreply.github.com>"]
 license = "MIT"
