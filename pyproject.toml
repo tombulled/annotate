@@ -14,7 +14,7 @@ packages = [
 
 [tool.poetry.dependencies]
 python = "^3.8"
-attribute = {git = "https://github.com/tombulled/attribute.git", tag = "v0.1.4"}
+attribute = "^0.1.4"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
