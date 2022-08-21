@@ -1,3 +1,3 @@
-import attribute
+from attribute import Attribute
 
-annotations = attribute.Attribute("_annotations_", default_factory=dict)
+annotations: Attribute = Attribute("_annotations_", default_factory=dict)

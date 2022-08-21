@@ -1,30 +1,30 @@
-import pytest
-import types
-import typing
-import annotate
+from types import FunctionType
+from pytest import fixture
+from typing import List, cast
+from annotate import Annotation
 
 
-@pytest.fixture
-def func() -> types.FunctionType:
-    def foo():
-        ...
+@fixture
+def func() -> FunctionType:
+    def foo() -> None:
+        pass
 
-    return foo
+    return cast(FunctionType, foo)
 
 
-@pytest.fixture
+@fixture
 def cls() -> type:
     class Foo:
-        ...
+        pass
 
     return Foo
 
 
-@pytest.fixture
-def annotation() -> annotate.Annotation:
-    return annotate.Annotation("key", "value")
+@fixture
+def annotation() -> Annotation[str, str]:
+    return Annotation("key", "value")
 
 
-@pytest.fixture
-def annotations() -> typing.List[annotate.Annotation]:
-    return [annotate.Annotation(f"key-{index}", f"value-{index}") for index in range(3)]
+@fixture
+def annotations() -> List[Annotation[str, str]]:
+    return [Annotation(f"key-{index}", f"value-{index}") for index in range(3)]
