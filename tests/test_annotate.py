@@ -7,17 +7,13 @@ from typing import List, TypeVar
 V = TypeVar("V")
 
 
-def test_annotate_single(
-    func: FunctionType, annotation: Annotation
-) -> None:
+def test_annotate_single(func: FunctionType, annotation: Annotation) -> None:
     annotate.annotate(func, annotation)
 
     assert annotate.get_raw_annotations(func) == {annotation.key: annotation}
 
 
-def test_annotate_multiple(
-    func: FunctionType, annotations: List[Annotation]
-) -> None:
+def test_annotate_multiple(func: FunctionType, annotations: List[Annotation]) -> None:
     annotation: Annotation
     for annotation in annotations:
         annotate.annotate(func, annotation)
@@ -28,12 +24,8 @@ def test_annotate_multiple(
 
 
 def test_annotate_inherited(cls: type) -> None:
-    annotation_a: Annotation[str, str] = Annotation(
-        "key-a", "value-a", inherited=False
-    )
-    annotation_b: Annotation[str, str] = Annotation(
-        "key-b", "value-b", inherited=True
-    )
+    annotation_a: Annotation[str, str] = Annotation("key-a", "value-a", inherited=False)
+    annotation_b: Annotation[str, str] = Annotation("key-b", "value-b", inherited=True)
 
     annotate.annotate(cls, annotation_a)
     annotate.annotate(cls, annotation_b)
