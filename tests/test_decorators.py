@@ -1,8 +1,8 @@
+from typing import Any, Dict
 import annotate
-import types
 
 
-def test_marker(func: types.FunctionType) -> None:
+def test_marker() -> None:
     def marker() -> int:
         return 123
 
@@ -12,14 +12,14 @@ def test_marker(func: types.FunctionType) -> None:
     )
 
 
-def test_annotation(func: types.FunctionType) -> None:
-    def annotation(a: int, b: str) -> dict:
+def test_annotation() -> None:
+    def annotation(*, a: int, b: str) -> Dict[str, Any]:
         return dict(
             a=a,
             b=b,
         )
 
-    value: dict = dict(a=123, b="abc")
+    value: Dict[str, Any] = dict(a=123, b="abc")
 
     assert annotate.annotation(annotation)(**value) == annotate.Annotation(
         key=annotation.__name__,

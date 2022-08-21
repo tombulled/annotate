@@ -1,29 +1,32 @@
 import dataclasses
-import typing
+from dataclasses import dataclass
+from typing import Any, Generic, Hashable, Optional, Tuple, TypeVar
 
 from . import api
 
+T = TypeVar("T")
+K = TypeVar("K", bound=Hashable)
+V = TypeVar("V")
 
-@dataclasses.dataclass(frozen=True)
-class Annotation:
-    key: str
-    value: typing.Any = None
+
+@dataclass(frozen=True)
+class Annotation(Generic[K, V]):
+    key: K
+    value: Optional[V] = None
     inherited: bool = False
     repeatable: bool = False
     stored: bool = True
-    targets: typing.Tuple[type] = dataclasses.field(
-        default_factory=lambda: (type, object)
-    )
+    targets: Tuple[type, ...] = (type, object)
 
-    def __call__(self, obj):
+    def __call__(self, obj: T) -> T:
         api.annotate(obj, self)
 
         return obj
 
-    def is_targetted(self, obj) -> bool:
+    def is_targetted(self, obj: Any) -> bool:
         return isinstance(obj, self.targets)
 
-    def is_compatible(self, annotation) -> bool:
+    def is_compatible(self, annotation: "Annotation") -> bool:
         return dataclasses.replace(self, value=None) == dataclasses.replace(
             annotation, value=None
         )
