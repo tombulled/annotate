@@ -5,8 +5,13 @@ Python Annotation System Inspired by Java Annotations
 Annotations are tags that store object metadata (e.g. for functions/classes)
 
 ## Installation
+### From PyPI
 ```console
-pip install git+https://github.com/tombulled/annotate
+pip install tombulled-annotate
+```
+### From GitHub
+```console
+pip install git+https://github.com/tombulled/annotate@main
 ```
 
 ## Usage
