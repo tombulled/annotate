@@ -1,5 +1,5 @@
 # annotate
-Python Annotation System Inspired by Java Annotations
+Python Annotation System
 
 ## About
 Annotations are tags that store object metadata (e.g. for functions/classes)

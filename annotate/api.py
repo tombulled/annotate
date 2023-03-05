@@ -1,9 +1,11 @@
 import dataclasses
 from types import BuiltinMethodType, MethodType
-from typing import Any, Callable, Dict, Hashable, Optional, cast
+from typing import Any, Callable, Hashable, MutableMapping, Optional, Sequence, cast
 
 from . import attributes
 from .models import Annotation
+
+__all__: Sequence[str] = ("annotate",)
 
 
 def _hook(cls: type, /) -> None:
@@ -16,7 +18,9 @@ def _hook(cls: type, /) -> None:
         if original_init_subclass is not None:
             original_init_subclass(subcls, **kwargs)
 
-        annotations: Dict[Hashable, Any] = attributes.annotations.setdefault(subcls)
+        annotations: MutableMapping[Hashable, Any] = attributes.annotations.setdefault(
+            subcls
+        )
 
         attributes.annotations.set(
             subcls,
@@ -51,7 +55,7 @@ def annotate(
     if isinstance(obj, type) and not attributes.annotations.has(obj):
         _hook(obj)
 
-    annotations: Dict[Hashable, Any] = attributes.annotations.setdefault(obj)
+    annotations: MutableMapping[Hashable, Any] = attributes.annotations.setdefault(obj)
 
     if annotation.repeatable and repeat:
         if annotation.key not in annotations:
@@ -67,17 +71,3 @@ def annotate(
             )
 
     annotations[annotation.key] = annotation
-
-
-get_raw_annotations = attributes.annotations.get
-has_annotations = attributes.annotations.has
-set_annotations = attributes.annotations.set
-del_annotations = attributes.annotations.delete
-setdefault_annotations = attributes.annotations.setdefault
-
-
-def get_annotations(obj: Any) -> Dict[Hashable, Any]:
-    return {
-        annotation.key: annotation.value
-        for annotation in get_raw_annotations(obj).values()
-    }

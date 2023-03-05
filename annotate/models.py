@@ -1,8 +1,10 @@
 import dataclasses
 from dataclasses import dataclass
-from typing import Any, Generic, Hashable, Optional, Tuple, TypeVar
+from typing import Any, Generic, Hashable, Optional, Sequence, Tuple, TypeVar
 
 from . import api
+
+__all__: Sequence[str] = ("Annotation",)
 
 T = TypeVar("T")
 K = TypeVar("K", bound=Hashable)

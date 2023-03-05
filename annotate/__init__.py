@@ -1,5 +1,5 @@
-from .api import (
-    annotate,
+from .api import annotate
+from .utils import (
     del_annotations,
     get_annotations,
     get_raw_annotations,
