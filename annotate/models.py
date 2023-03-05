@@ -1,18 +1,18 @@
 import dataclasses
 from dataclasses import dataclass
-from typing import Any, Generic, Hashable, Optional, Tuple, TypeVar
+from typing import Any, Generic, Hashable, Sequence, Tuple, TypeVar
 
 from . import api
 
+__all__: Sequence[str] = ("Annotation",)
+
 T = TypeVar("T")
-K = TypeVar("K", bound=Hashable)
-V = TypeVar("V")
 
 
 @dataclass(frozen=True)
-class Annotation(Generic[K, V]):
-    key: K
-    value: Optional[V] = None
+class Annotation(Generic[T]):
+    key: Hashable
+    value: Any = None
     inherited: bool = False
     repeatable: bool = False
     stored: bool = True

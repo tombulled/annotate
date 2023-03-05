@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "tombulled-annotate"
 version = "0.1.14"
-description = "Python Annotation System Inspired by Java Annotations"
+description = "Python Annotation System"
 authors = ["Tom Bulled <26026015+tombulled@users.noreply.github.com>"]
 license = "MIT"
 readme = "README.md"
@@ -14,8 +14,8 @@ packages = [
 
 [tool.poetry.dependencies]
 python = "^3.8"
-attribute = "^0.1.4"
 typing-extensions = "^4.3.0"
+attribute = "^0.1.4"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

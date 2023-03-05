@@ -1,5 +1,8 @@
-from .api import (
-    annotate,
+from .api import annotate
+from .attributes import annotations
+from .decorators import annotation, marker
+from .models import Annotation
+from .utils import (
     del_annotations,
     get_annotations,
     get_raw_annotations,
@@ -7,6 +10,3 @@ from .api import (
     set_annotations,
     setdefault_annotations,
 )
-from .attributes import annotations
-from .decorators import annotation, marker
-from .models import Annotation
