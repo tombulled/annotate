@@ -1,6 +1,8 @@
 from types import FunctionType
-from pytest import fixture
 from typing import List, cast
+
+from pytest import fixture
+
 from annotate import Annotation
 
 
@@ -21,10 +23,10 @@ def cls() -> type:
 
 
 @fixture
-def annotation() -> Annotation[str, str]:
+def annotation() -> Annotation:
     return Annotation("key", "value")
 
 
 @fixture
-def annotations() -> List[Annotation[str, str]]:
+def annotations() -> List[Annotation]:
     return [Annotation(f"key-{index}", f"value-{index}") for index in range(3)]

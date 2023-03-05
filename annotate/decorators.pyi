@@ -1,10 +1,9 @@
-from typing import Any, Callable, Hashable, Tuple, TypeVar, overload
+from typing import Callable, Hashable, Tuple, TypeVar, overload
 
 from typing_extensions import ParamSpec
 
 from .models import Annotation
 
-K = TypeVar("K", bound=Hashable)
 V = TypeVar("V")
 PS = ParamSpec("PS")
 
@@ -15,37 +14,37 @@ def annotation(
     repeatable: bool = False,
     stored: bool = True,
     targets: Tuple[type, ...] = (type, object),
-) -> Callable[[Callable[PS, V]], Callable[PS, Annotation[str, V]]]: ...
+) -> Callable[[Callable[PS, V]], Callable[PS, Annotation]]: ...
 @overload
 def annotation(
     *,
-    key: K,
+    key: Hashable,
     inherited: bool = False,
     repeatable: bool = False,
     stored: bool = True,
     targets: Tuple[type, ...] = (type, object),
-) -> Callable[[Callable[PS, V]], Callable[PS, Annotation[K, V]]]: ...
-@overload
-def annotation(
-    func: Callable[PS, V],
-    /,
-    *,
-    inherited: bool = False,
-    repeatable: bool = False,
-    stored: bool = True,
-    targets: Tuple[type, ...] = (type, object),
-) -> Callable[PS, Annotation[str, V]]: ...
+) -> Callable[[Callable[PS, V]], Callable[PS, Annotation]]: ...
 @overload
 def annotation(
     func: Callable[PS, V],
     /,
     *,
-    key: K,
     inherited: bool = False,
     repeatable: bool = False,
     stored: bool = True,
     targets: Tuple[type, ...] = (type, object),
-) -> Callable[PS, Annotation[K, V]]: ...
+) -> Callable[PS, Annotation]: ...
+@overload
+def annotation(
+    func: Callable[PS, V],
+    /,
+    *,
+    key: Hashable,
+    inherited: bool = False,
+    repeatable: bool = False,
+    stored: bool = True,
+    targets: Tuple[type, ...] = (type, object),
+) -> Callable[PS, Annotation]: ...
 @overload
 def marker(
     *,
@@ -53,16 +52,16 @@ def marker(
     repeatable: bool = False,
     stored: bool = True,
     targets: Tuple[type, ...] = (type, object),
-) -> Callable[[Callable[[], V]], Annotation[str, V]]: ...
+) -> Callable[[Callable[[], V]], Annotation]: ...
 @overload
 def marker(
     *,
-    key: K,
+    key: Hashable,
     inherited: bool = False,
     repeatable: bool = False,
     stored: bool = True,
     targets: Tuple[type, ...] = (type, object),
-) -> Callable[[Callable[[], V]], Annotation[K, V]]: ...
+) -> Callable[[Callable[[], V]], Annotation]: ...
 @overload
 def marker(
     func: Callable[[], V],
@@ -72,15 +71,15 @@ def marker(
     repeatable: bool = False,
     stored: bool = True,
     targets: Tuple[type, ...] = (type, object),
-) -> Annotation[Any, V]: ...
+) -> Annotation: ...
 @overload
 def marker(
     func: Callable[[], V],
     /,
     *,
-    key: K,
+    key: Hashable,
     inherited: bool = False,
     repeatable: bool = False,
     stored: bool = True,
     targets: Tuple[type, ...] = (type, object),
-) -> Annotation[K, V]: ...
+) -> Annotation: ...
